@@ -1,0 +1,226 @@
+﻿Build1=Default,ir.taravatgroup.mytv
+File1=aparat.png
+File2=home_layout.bal
+File3=namash.png
+File4=uptv.png
+FileGroup1=Default Group
+FileGroup2=Default Group
+FileGroup3=Default Group
+FileGroup4=Default Group
+Group=Default Group
+Library1=core
+Library2=exoplayer
+Library3=webviewextras
+Library4=webviewsettings
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="14" android:targetSdkVersion="33"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~~\n~SetApplicationAttribute(android:usesCleartextTraffic,"true")~\n~AddPermission(android.permission.DOWNLOAD_WITHOUT_NOTIFICATION)~\n~~\n~AddPermission(android.permission.WRITE_EXTERNAL_STORAGE)~\n~~\n~AddManifestText(<uses-permission~\n~   android:name="android.permission.WRITE_EXTERNAL_STORAGE"~\n~   android:maxSdkVersion="18" />~\n~)~\n~~\n~AddApplicationText(~\n~  <provider~\n~  android:name="android.support.v4.content.FileProvider"~\n~  android:authorities="$PACKAGE$.provider"~\n~  android:exported="false"~\n~  android:grantUriPermissions="true">~\n~  <meta-data~\n~  android:name="android.support.FILE_PROVIDER_PATHS"~\n~  android:resource="@xml/provider_paths"/>~\n~  </provider>~\n~)~\n~CreateResource(xml, provider_paths,~\n~   <files-path name="name" path="shared" />~\n~)
+Module1=Starter
+NumberOfFiles=4
+NumberOfLibraries=4
+NumberOfModules=1
+Version=12.5
+@EndOfDesignText@
+#Region  Project Attributes 
+	#ApplicationLabel: تلوزیون من
+	#VersionCode: 1
+	#VersionName: 
+	'SupportedOrientations possible values: unspecified, landscape or portrait.
+	#SupportedOrientations: unspecified
+	#CanInstallToExternalStorage: False
+#End Region
+
+#Region  Activity Attributes 
+	#FullScreen: True
+	#IncludeTitle:  False
+#End Region
+
+Sub Process_Globals
+	'These global variables will be declared once when the application starts.
+	'These variables can be accessed from all modules.
+	Private player1 As SimpleExoPlayer
+	
+End Sub
+
+Sub Globals
+	'These global variables will be redeclared each time the activity is created.
+	
+	
+	Private SimpleExoPlayerView1 As SimpleExoPlayerView
+	Private pan_all As Panel
+	
+	Dim isinital_player As Int=0
+	Private WebView1 As WebView
+	Dim web_setting As WebViewSettings
+	Dim current_site As Int=0
+	
+	Private rd_vertical As RadioButton
+	Private rd_horiz As RadioButton
+	Private rd_fit As RadioButton
+	
+End Sub
+
+Sub Activity_Create(FirstTime As Boolean)
+	
+	
+	
+	Activity.LoadLayout("home_layout")
+	
+	web_setting.setAllowFileAccess(WebView1,True)
+	web_setting.setAppCacheEnabled(WebView1,True)
+	web_setting.setDatabaseEnabled(WebView1,True)
+	web_setting.setDOMStorageEnabled(WebView1,True)
+	web_setting.setJavaScriptCanOpenWindowsAutomatically(WebView1,True)
+	web_setting.setLightTouchEnabled(WebView1,True)
+	web_setting.setLoadsImagesAutomatically(WebView1,True)
+	web_setting.setUserAgentString(WebView1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246")
+	web_setting.setUseWideViewPort(WebView1,True)
+
+End Sub
+
+Sub Activity_Resume
+
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+
+End Sub
+
+
+Sub play_now(link As String)
+	
+	If(rd_fit.Checked=True)Then
+		SimpleExoPlayerView1.ResizeMode="FIT"
+	Else If (rd_horiz.Checked=True)Then
+		SimpleExoPlayerView1.ResizeMode="FIXED_WIDTH"
+	Else
+		SimpleExoPlayerView1.ResizeMode="FIXED_HEIGHT"
+	End If
+	
+	If(isinital_player=1)Then
+		player1.Release
+		isinital_player=0
+	End If
+	
+	pan_all.Visible=True
+	player1.Initialize("player")
+	player1.Prepare(player1.CreateUriSource(link))
+	
+	
+	SimpleExoPlayerView1.Player = player1 'Connect the interface to the engine
+	player1.Play
+	isinital_player=1
+End Sub
+
+
+Sub Activity_KeyPress (KeyCode As Int) As Boolean
+	If KeyCode = KeyCodes.KEYCODE_BACK Then
+		If(pan_all.Visible=True)Then
+			pan_all.Visible=False
+			If(isinital_player=1)Then
+				player1.Release
+				isinital_player=0
+			End If
+			
+		Else If (current_site=1)Then
+			
+			If (WebView1.Url <> "https://www.uptvs.com/")Then
+				WebView1.LoadUrl("https://www.uptvs.com/")
+			Else
+				WebView1.Visible=False
+				WebView1.LoadUrl("")
+				current_site=0
+			End If
+		Else If (current_site=2)Then
+			
+			If (WebView1.Url <> "https://www.namasha.com/")Then
+				WebView1.LoadUrl("https://www.namasha.com/")
+			Else
+				WebView1.Visible=False
+				WebView1.LoadUrl("")
+				current_site=0
+			End If
+			
+		Else If (current_site=3)Then
+			
+			If (WebView1.Url <> "https://www.aparat.com/")Then
+				WebView1.LoadUrl("https://www.aparat.com/")
+			Else
+				WebView1.Visible=False
+				WebView1.LoadUrl("")
+				current_site=0
+			End If
+				
+		Else
+			ExitApplication
+			'Log("exit")
+			'Log(url_toPlay)
+		End If
+		Return True
+		Else
+		Return False
+		
+		End If
+	
+End Sub
+
+Private Sub pan_all_Click
+	
+End Sub
+
+Private Sub WebView1_OverrideUrl (Url As String) As Boolean
+	
+	
+	If(current_site=1)Then
+		If(Url.Contains("upera.tv") Or Url.Contains("150.uptv"))Then
+			play_now(Url)
+			Return True
+		End If	
+	
+	Else If (current_site=2)Then
+		
+		If(Url.Contains("videos/dl/"))Then
+			play_now(Url)
+			Return True
+		End If
+		
+	Else If (current_site=3)Then
+		
+		If(Url.Contains("/aparat-video/") )Then
+			play_now(Url)
+			Return True
+		End If
+	End If
+	
+	
+	
+	
+	
+	
+	
+	'Return True
+End Sub
+
+
+Private Sub pan_uptv_Click
+	WebView1.Visible=True
+	WebView1.LoadUrl("https://www.uptvs.com/")
+	current_site=1
+End Sub
+
+Private Sub pan_namasha_Click
+	WebView1.Visible=True
+	WebView1.LoadUrl("https://www.namasha.com/")
+	current_site=2
+	
+	
+	
+	
+End Sub
+
+Private Sub pan_aparat_Click
+	WebView1.Visible=True
+	WebView1.LoadUrl("https://www.aparat.com/")
+	current_site=3
+End Sub
+
+
+
